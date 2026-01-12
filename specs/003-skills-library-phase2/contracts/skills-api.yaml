@@ -1,0 +1,398 @@
+openapi: 3.1.0
+info:
+  title: Skills Library API
+  version: 1.0.0
+  description: |
+    API for invoking and managing skills in the Todo Full-Stack Web Application.
+    Skills are atomic, reusable capabilities used by agents to perform specific operations.
+
+servers:
+  - url: /api/v1
+    description: API v1
+
+tags:
+  - name: Skills
+    description: Skill invocation and discovery
+  - name: Registry
+    description: Skill registry operations
+
+paths:
+  /skills:
+    get:
+      tags: [Registry]
+      operationId: listSkills
+      summary: List all registered skills
+      description: Returns all skills available in the registry with their metadata.
+      parameters:
+        - name: category
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/SkillCategory'
+          description: Filter by skill category
+        - name: agent
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter by assigned agent name
+      responses:
+        '200':
+          description: List of skills
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [skills, total]
+                properties:
+                  skills:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SkillDefinition'
+                  total:
+                    type: integer
+                    minimum: 0
+
+  /skills/{skill_name}:
+    get:
+      tags: [Registry]
+      operationId: getSkill
+      summary: Get skill definition
+      description: Returns the full definition of a specific skill.
+      parameters:
+        - name: skill_name
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z][a-z0-9_]*$'
+          description: Unique skill identifier
+      responses:
+        '200':
+          description: Skill definition
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillDefinition'
+        '404':
+          description: Skill not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+
+  /skills/{skill_name}/invoke:
+    post:
+      tags: [Skills]
+      operationId: invokeSkill
+      summary: Invoke a skill
+      description: |
+        Execute a skill with the provided input. The input must conform to the
+        skill's input schema. Returns either a success output or a failure response.
+      parameters:
+        - name: skill_name
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z][a-z0-9_]*$'
+          description: Unique skill identifier
+        - name: X-Correlation-ID
+          in: header
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Correlation ID for tracing (generated if not provided)
+        - name: X-Invoking-Agent
+          in: header
+          required: true
+          schema:
+            type: string
+          description: Name of the agent invoking the skill
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Input payload matching skill's input_schema
+      responses:
+        '200':
+          description: Skill executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillSuccessResponse'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+        '404':
+          description: Skill not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+        '408':
+          description: Skill execution timeout
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+        '500':
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+        '503':
+          description: External service error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailureResponse'
+
+  /skills/categories:
+    get:
+      tags: [Registry]
+      operationId: listCategories
+      summary: List skill categories
+      description: Returns all skill categories with counts.
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [categories]
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      type: object
+                      required: [name, skill_count]
+                      properties:
+                        name:
+                          $ref: '#/components/schemas/SkillCategory'
+                        skill_count:
+                          type: integer
+                          minimum: 0
+
+  /skills/failure-modes:
+    get:
+      tags: [Registry]
+      operationId: listFailureModes
+      summary: List standard failure modes
+      description: Returns all standard failure modes and their definitions.
+      responses:
+        '200':
+          description: List of failure modes
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [failure_modes]
+                properties:
+                  failure_modes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FailureMode'
+
+components:
+  schemas:
+    SkillCategory:
+      type: string
+      enum:
+        - orchestration
+        - authentication
+        - task_management
+        - user_management
+        - ai
+        - planning
+        - execution
+      description: Logical skill grouping
+
+    SkillDefinition:
+      type: object
+      required:
+        - name
+        - description
+        - category
+        - input_schema
+        - output_schema
+      properties:
+        name:
+          type: string
+          pattern: '^[a-z][a-z0-9_]*$'
+          maxLength: 64
+          description: Unique skill identifier (snake_case)
+        description:
+          type: string
+          maxLength: 500
+          description: Human-readable description
+        category:
+          $ref: '#/components/schemas/SkillCategory'
+        assigned_to:
+          type: array
+          items:
+            type: string
+          description: Agent names that use this skill
+        input_schema:
+          type: object
+          description: JSON Schema for input validation
+        output_schema:
+          type: object
+          description: JSON Schema for output structure
+        success_criteria:
+          type: array
+          items:
+            type: string
+          description: Measurable success conditions
+        failure_modes:
+          type: array
+          items:
+            $ref: '#/components/schemas/FailureCode'
+          description: Possible failure codes
+        timeout_seconds:
+          type: integer
+          minimum: 1
+          maximum: 300
+          default: 30
+          description: Max execution time
+
+    SkillSuccessResponse:
+      type: object
+      required:
+        - success
+        - output
+        - metadata
+      properties:
+        success:
+          type: boolean
+          const: true
+        output:
+          type: object
+          description: Skill-specific output payload
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+
+    FailureResponse:
+      type: object
+      required:
+        - success
+        - failure
+        - metadata
+      properties:
+        success:
+          type: boolean
+          const: false
+        failure:
+          type: object
+          required:
+            - code
+            - message
+            - recoverable
+          properties:
+            code:
+              $ref: '#/components/schemas/FailureCode'
+            message:
+              type: string
+              description: Human-readable error message
+            details:
+              type: object
+              description: Additional context (sanitized)
+            recoverable:
+              type: boolean
+              description: Whether operation can be retried
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+
+    ResponseMetadata:
+      type: object
+      required:
+        - correlation_id
+        - duration_ms
+        - timestamp
+        - skill_name
+      properties:
+        correlation_id:
+          type: string
+          format: uuid
+          description: Tracing identifier
+        duration_ms:
+          type: integer
+          minimum: 0
+          description: Execution time in milliseconds
+        timestamp:
+          type: string
+          format: date-time
+          description: When result was produced
+        skill_name:
+          type: string
+          description: Name of executed skill
+        degraded:
+          type: boolean
+          default: false
+          description: True if using fallback behavior
+
+    FailureCode:
+      type: string
+      enum:
+        - VALIDATION_ERROR
+        - NOT_FOUND
+        - UNAUTHORIZED
+        - RATE_EXCEEDED
+        - TIMEOUT
+        - PERSISTENCE_ERROR
+        - EXTERNAL_SERVICE_ERROR
+        - INTERNAL_ERROR
+      description: Standard failure code
+
+    FailureMode:
+      type: object
+      required:
+        - code
+        - message_template
+        - severity
+        - suggested_action
+      properties:
+        code:
+          $ref: '#/components/schemas/FailureCode'
+        message_template:
+          type: string
+          maxLength: 200
+          description: Template for error message
+        severity:
+          type: string
+          enum: [recoverable, fatal]
+          description: Whether operation can be retried
+        suggested_action:
+          type: string
+          maxLength: 200
+          description: Guidance for handling
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token from authentication
+
+security:
+  - BearerAuth: []

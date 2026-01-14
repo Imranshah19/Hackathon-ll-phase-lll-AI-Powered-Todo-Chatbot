@@ -96,3 +96,70 @@ def mock_ai_service() -> Generator[None, None, None]:
     """Mock AI service for unit tests."""
     # TODO: Implement in Phase 8 when AI skills are implemented
     yield
+
+
+# =============================================================================
+# Data Schema Testing Fixtures (Phase 2 - Data Schemas)
+# =============================================================================
+
+@pytest.fixture
+def valid_user_email() -> str:
+    """Valid email for user creation tests."""
+    return "testuser@example.com"
+
+
+@pytest.fixture
+def valid_password() -> str:
+    """Valid password meeting minimum requirements (8+ chars)."""
+    return "SecurePass123!"
+
+
+@pytest.fixture
+def invalid_emails() -> list[str]:
+    """List of invalid email formats for validation testing."""
+    return [
+        "not-an-email",
+        "@missing-local.com",
+        "missing-domain@",
+        "spaces in@email.com",
+        "",
+    ]
+
+
+@pytest.fixture
+def invalid_passwords() -> list[str]:
+    """List of invalid passwords (too short)."""
+    return [
+        "",
+        "1234567",  # 7 chars - below minimum
+        "short",    # 5 chars
+    ]
+
+
+@pytest.fixture
+def valid_task_title() -> str:
+    """Valid task title for testing."""
+    return "Buy groceries"
+
+
+@pytest.fixture
+def valid_task_description() -> str:
+    """Valid task description for testing."""
+    return "Milk, eggs, bread, and vegetables from the store"
+
+
+@pytest.fixture
+def invalid_task_titles() -> list[str]:
+    """List of invalid task titles for validation testing."""
+    return [
+        "",                    # Empty
+        "x" * 256,            # Exceeds 255 char limit
+    ]
+
+
+@pytest.fixture
+def invalid_task_descriptions() -> list[str]:
+    """List of invalid task descriptions for validation testing."""
+    return [
+        "x" * 4001,           # Exceeds 4000 char limit
+    ]

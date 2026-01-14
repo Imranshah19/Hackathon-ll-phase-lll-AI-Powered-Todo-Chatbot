@@ -1,0 +1,493 @@
+openapi: 3.1.0
+info:
+  title: Task Graph API
+  description: API for managing task dependencies and graph visualization
+  version: 1.0.0
+  contact:
+    name: Todo App Team
+
+servers:
+  - url: /api/v1
+    description: API v1
+
+tags:
+  - name: Dependencies
+    description: Task dependency management
+  - name: Graph
+    description: Graph visualization and analysis
+
+paths:
+  /tasks/{taskId}/dependencies:
+    get:
+      tags: [Dependencies]
+      summary: List task dependencies
+      description: Get all dependencies where this task is the target (blocked by others)
+      operationId: listTaskDependencies
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+        - name: direction
+          in: query
+          description: Which dependencies to return
+          schema:
+            type: string
+            enum: [prerequisites, dependents, both]
+            default: both
+      responses:
+        '200':
+          description: Dependencies retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DependencyListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - bearerAuth: []
+
+    post:
+      tags: [Dependencies]
+      summary: Create task dependency
+      description: Create a dependency where another task must be completed before this task
+      operationId: createTaskDependency
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDependencyRequest'
+      responses:
+        '201':
+          description: Dependency created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskDependency'
+        '400':
+          description: Invalid request (self-loop, duplicate, or would create cycle)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                cycle:
+                  summary: Circular dependency detected
+                  value:
+                    code: CIRCULAR_DEPENDENCY
+                    message: Adding this dependency would create a circular reference
+                    details:
+                      cycle_path: ["task-a", "task-b", "task-c", "task-a"]
+                duplicate:
+                  summary: Dependency already exists
+                  value:
+                    code: DUPLICATE_DEPENDENCY
+                    message: This dependency already exists
+                self_loop:
+                  summary: Self-referencing dependency
+                  value:
+                    code: SELF_LOOP
+                    message: A task cannot depend on itself
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - bearerAuth: []
+
+  /tasks/{taskId}/dependencies/{dependencyId}:
+    delete:
+      tags: [Dependencies]
+      summary: Remove task dependency
+      description: Remove a dependency relationship
+      operationId: deleteTaskDependency
+      parameters:
+        - $ref: '#/components/parameters/TaskId'
+        - $ref: '#/components/parameters/DependencyId'
+      responses:
+        '204':
+          description: Dependency removed successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+      security:
+        - bearerAuth: []
+
+  /tasks/graph:
+    get:
+      tags: [Graph]
+      summary: Get task graph
+      description: Get all tasks and dependencies for the authenticated user as a graph structure
+      operationId: getTaskGraph
+      parameters:
+        - name: status
+          in: query
+          description: Filter tasks by status
+          schema:
+            type: string
+            enum: [all, incomplete, completed]
+            default: all
+        - name: focus_task_id
+          in: query
+          description: If provided, return only this task and its direct relationships
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Graph retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskGraphResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+
+  /tasks/graph/recommended-order:
+    get:
+      tags: [Graph]
+      summary: Get recommended task order
+      description: Get tasks in topological order respecting dependencies, with parallel groups identified
+      operationId: getRecommendedOrder
+      parameters:
+        - name: include_completed
+          in: query
+          description: Include completed tasks in the order
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Recommended order calculated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecommendedOrderResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+
+  /tasks/graph/validate:
+    post:
+      tags: [Graph]
+      summary: Validate potential dependency
+      description: Check if adding a dependency would create a cycle without actually creating it
+      operationId: validateDependency
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValidateDependencyRequest'
+      responses:
+        '200':
+          description: Validation result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+      security:
+        - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    TaskId:
+      name: taskId
+      in: path
+      required: true
+      description: Task UUID
+      schema:
+        type: string
+        format: uuid
+
+    DependencyId:
+      name: dependencyId
+      in: path
+      required: true
+      description: Dependency UUID
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    TaskDependency:
+      type: object
+      required:
+        - id
+        - source_task_id
+        - target_task_id
+        - created_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique dependency identifier
+        source_task_id:
+          type: string
+          format: uuid
+          description: Task that must be completed first (prerequisite)
+        target_task_id:
+          type: string
+          format: uuid
+          description: Task that depends on source (blocked task)
+        created_at:
+          type: string
+          format: date-time
+          description: When the dependency was created
+
+    CreateDependencyRequest:
+      type: object
+      required:
+        - source_task_id
+      properties:
+        source_task_id:
+          type: string
+          format: uuid
+          description: Task that must be completed first (prerequisite for the path task)
+
+    DependencyListResponse:
+      type: object
+      required:
+        - prerequisites
+        - dependents
+      properties:
+        prerequisites:
+          type: array
+          description: Tasks that must be completed before this task
+          items:
+            $ref: '#/components/schemas/TaskSummary'
+        dependents:
+          type: array
+          description: Tasks that depend on this task
+          items:
+            $ref: '#/components/schemas/TaskSummary'
+
+    TaskSummary:
+      type: object
+      required:
+        - id
+        - title
+        - is_completed
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        is_completed:
+          type: boolean
+        dependency_id:
+          type: string
+          format: uuid
+          description: ID of the dependency relationship
+
+    TaskGraphResponse:
+      type: object
+      required:
+        - nodes
+        - edges
+        - stats
+      properties:
+        nodes:
+          type: array
+          description: All tasks as graph nodes
+          items:
+            $ref: '#/components/schemas/GraphNode'
+        edges:
+          type: array
+          description: All dependencies as graph edges
+          items:
+            $ref: '#/components/schemas/GraphEdge'
+        stats:
+          $ref: '#/components/schemas/GraphStats'
+
+    GraphNode:
+      type: object
+      required:
+        - id
+        - title
+        - is_completed
+        - is_blocked
+        - prerequisite_count
+        - dependent_count
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        is_completed:
+          type: boolean
+        is_blocked:
+          type: boolean
+          description: True if any prerequisite is incomplete
+        prerequisite_count:
+          type: integer
+          description: Number of incomplete prerequisites
+        dependent_count:
+          type: integer
+          description: Number of tasks that depend on this one
+        created_at:
+          type: string
+          format: date-time
+
+    GraphEdge:
+      type: object
+      required:
+        - id
+        - source
+        - target
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Dependency ID
+        source:
+          type: string
+          format: uuid
+          description: Source task ID (prerequisite)
+        target:
+          type: string
+          format: uuid
+          description: Target task ID (dependent)
+
+    GraphStats:
+      type: object
+      properties:
+        total_tasks:
+          type: integer
+        completed_tasks:
+          type: integer
+        total_dependencies:
+          type: integer
+        blocked_tasks:
+          type: integer
+          description: Tasks with incomplete prerequisites
+        ready_tasks:
+          type: integer
+          description: Incomplete tasks with no blockers
+
+    RecommendedOrderResponse:
+      type: object
+      required:
+        - levels
+        - total_tasks
+      properties:
+        levels:
+          type: array
+          description: Tasks grouped by dependency level (level 0 has no prerequisites)
+          items:
+            $ref: '#/components/schemas/TaskLevel'
+        total_tasks:
+          type: integer
+
+    TaskLevel:
+      type: object
+      required:
+        - level
+        - tasks
+        - can_parallelize
+      properties:
+        level:
+          type: integer
+          description: Dependency depth (0 = no prerequisites)
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskSummary'
+        can_parallelize:
+          type: boolean
+          description: True if all tasks at this level can be done simultaneously
+
+    ValidateDependencyRequest:
+      type: object
+      required:
+        - source_task_id
+        - target_task_id
+      properties:
+        source_task_id:
+          type: string
+          format: uuid
+        target_task_id:
+          type: string
+          format: uuid
+
+    ValidationResult:
+      type: object
+      required:
+        - valid
+      properties:
+        valid:
+          type: boolean
+          description: True if the dependency can be created
+        error_code:
+          type: string
+          description: Error code if invalid
+          enum: [CIRCULAR_DEPENDENCY, SELF_LOOP, DUPLICATE_DEPENDENCY, TASK_NOT_FOUND]
+        message:
+          type: string
+          description: Human-readable explanation
+        cycle_path:
+          type: array
+          description: Task IDs forming the cycle (if circular dependency)
+          items:
+            type: string
+            format: uuid
+
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error context
+        correlation_id:
+          type: string
+          format: uuid
+          description: Request tracking ID
+
+  responses:
+    Unauthorized:
+      description: Authentication required or token invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: UNAUTHORIZED
+            message: Authentication required
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+          example:
+            code: NOT_FOUND
+            message: Task not found

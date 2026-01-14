@@ -14,6 +14,15 @@ from src.models.failure_mode import (
 )
 from src.models.skill import SkillCategory
 
+# User models (Data Schemas Phase-2)
+from src.models.user import User, UserBase, UserCreate, UserPublic
+
+# Task models (Data Schemas Phase-2)
+from src.models.task import Task, TaskBase, TaskCreate, TaskPublic, TaskUpdate
+
+# Base utilities
+from src.models.base import utc_now
+
 __all__ = [
     # Skill enums
     "SkillCategory",
@@ -24,4 +33,17 @@ __all__ = [
     "FailureDetails",
     "FailureResponse",
     "STANDARD_FAILURE_MODES",
+    # User models
+    "User",
+    "UserBase",
+    "UserCreate",
+    "UserPublic",
+    # Task models
+    "Task",
+    "TaskBase",
+    "TaskCreate",
+    "TaskPublic",
+    "TaskUpdate",
+    # Base utilities
+    "utc_now",
 ]

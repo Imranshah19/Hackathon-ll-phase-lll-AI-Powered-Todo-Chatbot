@@ -1,0 +1,437 @@
+openapi: 3.1.0
+info:
+  title: Todo App API - Data Schemas
+  description: |
+    API contract for Data Schemas (Phase-2).
+    Defines User and Task entity schemas with validation rules.
+  version: 1.0.0
+  contact:
+    name: Todo App Team
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local development
+
+components:
+  schemas:
+    # ============================================================
+    # User Schemas
+    # ============================================================
+
+    UserBase:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          description: User's email address (RFC 5322 compliant)
+          example: "user@example.com"
+      required:
+        - email
+
+    UserCreate:
+      allOf:
+        - $ref: '#/components/schemas/UserBase'
+        - type: object
+          properties:
+            password:
+              type: string
+              minLength: 8
+              description: Plain text password (will be hashed)
+              example: "securepass123"
+          required:
+            - password
+
+    UserPublic:
+      allOf:
+        - $ref: '#/components/schemas/UserBase'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Unique user identifier
+              example: "550e8400-e29b-41d4-a716-446655440000"
+            created_at:
+              type: string
+              format: date-time
+              description: Account creation timestamp (UTC)
+              example: "2026-01-13T10:30:00Z"
+            updated_at:
+              type: string
+              format: date-time
+              description: Last update timestamp (UTC)
+              example: "2026-01-13T10:30:00Z"
+          required:
+            - id
+            - created_at
+            - updated_at
+
+    # ============================================================
+    # Task Schemas
+    # ============================================================
+
+    TaskBase:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Task title (required)
+          example: "Buy groceries"
+        description:
+          type: string
+          maxLength: 4000
+          nullable: true
+          description: Optional task description
+          example: "Milk, eggs, bread"
+        is_completed:
+          type: boolean
+          default: false
+          description: Task completion status
+          example: false
+      required:
+        - title
+
+    TaskCreate:
+      allOf:
+        - $ref: '#/components/schemas/TaskBase'
+
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: Updated task title
+        description:
+          type: string
+          maxLength: 4000
+          nullable: true
+          description: Updated task description
+        is_completed:
+          type: boolean
+          description: Updated completion status
+      description: All fields optional for partial update
+
+    TaskPublic:
+      allOf:
+        - $ref: '#/components/schemas/TaskBase'
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+              description: Unique task identifier
+              example: "660e8400-e29b-41d4-a716-446655440001"
+            user_id:
+              type: string
+              format: uuid
+              description: Owner user identifier
+              example: "550e8400-e29b-41d4-a716-446655440000"
+            created_at:
+              type: string
+              format: date-time
+              description: Task creation timestamp (UTC)
+              example: "2026-01-13T11:00:00Z"
+            updated_at:
+              type: string
+              format: date-time
+              description: Last update timestamp (UTC)
+              example: "2026-01-13T11:00:00Z"
+          required:
+            - id
+            - user_id
+            - created_at
+            - updated_at
+
+    TaskList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskPublic'
+        total:
+          type: integer
+          description: Total number of tasks
+          example: 10
+
+    # ============================================================
+    # Error Schemas
+    # ============================================================
+
+    ValidationError:
+      type: object
+      properties:
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationErrorItem'
+      required:
+        - detail
+
+    ValidationErrorItem:
+      type: object
+      properties:
+        loc:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: integer
+          description: Location of the error (field path)
+          example: ["body", "title"]
+        msg:
+          type: string
+          description: Human-readable error message
+          example: "String should have at least 1 character"
+        type:
+          type: string
+          description: Error type identifier
+          example: "string_too_short"
+      required:
+        - loc
+        - msg
+        - type
+
+    HTTPError:
+      type: object
+      properties:
+        detail:
+          type: string
+          description: Error message
+          example: "Not found"
+      required:
+        - detail
+
+  responses:
+    ValidationError:
+      description: Validation Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ValidationError'
+          example:
+            detail:
+              - loc: ["body", "title"]
+                msg: "String should have at least 1 character"
+                type: "string_too_short"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HTTPError'
+          example:
+            detail: "Task not found"
+
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HTTPError'
+          example:
+            detail: "Not authenticated"
+
+    Forbidden:
+      description: Access denied
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HTTPError'
+          example:
+            detail: "Not authorized to access this resource"
+
+    Conflict:
+      description: Conflict (e.g., duplicate email)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/HTTPError'
+          example:
+            detail: "Email already registered"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT authentication token
+
+# ============================================================
+# Paths (Schema validation endpoints only for Phase-2)
+# ============================================================
+
+paths:
+  /users:
+    post:
+      summary: Register new user
+      operationId: createUser
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublic'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /users/me:
+    get:
+      summary: Get current user profile
+      operationId: getCurrentUser
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Current user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPublic'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /tasks:
+    get:
+      summary: List current user's tasks
+      operationId: listTasks
+      tags:
+        - Tasks
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      summary: Create new task
+      operationId: createTask
+      tags:
+        - Tasks
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskCreate'
+      responses:
+        '201':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskPublic'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /tasks/{task_id}:
+    parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+        description: Task UUID
+
+    get:
+      summary: Get task by ID
+      operationId: getTask
+      tags:
+        - Tasks
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Task details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskPublic'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      summary: Update task
+      operationId: updateTask
+      tags:
+        - Tasks
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdate'
+      responses:
+        '200':
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskPublic'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+    delete:
+      summary: Delete task
+      operationId: deleteTask
+      tags:
+        - Tasks
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Task deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+tags:
+  - name: Users
+    description: User registration and profile
+  - name: Tasks
+    description: Task CRUD operations

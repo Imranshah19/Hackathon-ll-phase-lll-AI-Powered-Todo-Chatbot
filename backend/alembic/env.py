@@ -7,21 +7,31 @@ Configured for SQLModel with environment-based database URL.
 import os
 from logging.config import fileConfig
 
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
 from alembic import context
 from sqlalchemy import engine_from_config, pool
 from sqlmodel import SQLModel
 
 # Import all models to register them with SQLModel.metadata
+# Phase 2 models
 from src.models.task import Task
 from src.models.user import User
+# Phase 3 models
+from src.models.conversation import Conversation
+from src.models.message import Message
 
 # Alembic Config object
 config = context.config
 
 # Override sqlalchemy.url from environment variable
+# Default to SQLite for local development
 database_url = os.getenv(
     "DATABASE_URL",
-    "postgresql://localhost:5432/todo_app"
+    "sqlite:///./dev.db"
 )
 config.set_main_option("sqlalchemy.url", database_url)
 

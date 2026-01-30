@@ -179,7 +179,6 @@ AI_CONFIDENCE_THRESHOLD_LOW=0.5
 - [x] Database migrations created
 - [ ] Backend deployed
 - [ ] Frontend deployed
-- [ ] Demo video recorded
 
 ## Performance Targets
 

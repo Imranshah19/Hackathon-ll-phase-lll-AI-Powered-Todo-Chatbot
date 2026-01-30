@@ -1,0 +1,39 @@
+# Render Blueprint for Backend Deployment
+# https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: todo-chatbot-api
+    runtime: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -e .
+    startCommand: uvicorn src.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: DEBUG
+        value: false
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 1440
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: AI_TIMEOUT_SECONDS
+        value: 5
+      - key: AI_CONFIDENCE_THRESHOLD_HIGH
+        value: 0.8
+      - key: AI_CONFIDENCE_THRESHOLD_LOW
+        value: 0.5
+      - key: CORS_ORIGINS
+        sync: false
+      - key: LOG_LEVEL
+        value: INFO

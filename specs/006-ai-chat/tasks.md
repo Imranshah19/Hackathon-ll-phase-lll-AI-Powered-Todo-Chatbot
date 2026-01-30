@@ -205,19 +205,19 @@
 
 ---
 
-## Phase 8: User Story 6 - Graceful Fallback to CLI (Priority: P6) 🔶 PARTIAL
+## Phase 8: User Story 6 - Graceful Fallback to CLI (Priority: P6) ✅ COMPLETE
 
 **Goal**: When AI fails or confidence is low, provide CLI command alternatives
 
 **Independent Test**: Simulate AI failure, verify CLI instructions returned
 
-**STATUS**: Core fallback logic implemented. Some tests exist. Integration tests needed.
+**STATUS**: ✅ Tests and implementation complete. Ready to push.
 
 ### Tests for User Story 6
 
-- [ ] T062 [P] [US6] Contract test for 503 fallback response in backend/tests/contract/test_chat_fallback.py
+- [x] T062 [P] [US6] Contract test for 503 fallback response in backend/tests/contract/test_chat_fallback.py
 - [x] T063 [P] [US6] Unit test for confidence-based fallback in backend/tests/unit/test_fallback.py
-- [ ] T064 [P] [US6] Integration test for AI timeout fallback in backend/tests/integration/test_chat_timeout.py
+- [x] T064 [P] [US6] Integration test for AI timeout fallback in backend/tests/integration/test_chat_timeout.py
 
 ### Implementation for User Story 6
 
@@ -381,8 +381,8 @@ Tests: T024, T025, T026 (all parallel within story)
 | US2: List | ✅ COMPLETE | ✅ Done | ✅ Done | ✅ YES (pushed) |
 | US3: Complete | ✅ COMPLETE | ✅ Done | ✅ Done | ✅ YES (pushed) |
 | US4: Update | ✅ COMPLETE | ✅ Done | ✅ Done | ✅ YES - Ready to push |
-| US5: Delete | ✅ COMPLETE | ✅ Done | ✅ Done | ✅ YES - Ready to push |
-| US6: Fallback | 🔶 PARTIAL | 🔶 Partial | ✅ Done | ❌ NO - Complete tests first |
+| US5: Delete | ✅ COMPLETE | ✅ Done | ✅ Done | ✅ YES (pushed) |
+| US6: Fallback | ✅ COMPLETE | ✅ Done | ✅ Done | ✅ YES - Ready to push |
 | Phase 9: Polish | ❌ TODO | ❌ Missing | ❌ TODO | ❌ NO |
 
 ### Valid Stop Points (Checkpoints)

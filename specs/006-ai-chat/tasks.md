@@ -20,7 +20,7 @@
 
 ---
 
-## Phase 1: Setup (Shared Infrastructure)
+## Phase 1: Setup (Shared Infrastructure) ✅ COMPLETE
 
 **Purpose**: Project initialization and AI integration dependencies
 
@@ -30,52 +30,54 @@
 - [x] T004 [P] Create InterpretedCommand dataclass in backend/src/ai/types.py
 - [x] T005 Add OPENAI_API_KEY and ANTHROPIC_API_KEY to .env.example
 
+**Status**: ALL COMPLETE - Ready for Phase 2
+
 ---
 
-## Phase 2: Foundational (Blocking Prerequisites)
+## Phase 2: Foundational (Blocking Prerequisites) ✅ COMPLETE
 
 **Purpose**: Core infrastructure that MUST be complete before ANY user story can be implemented
 
-**CRITICAL**: No user story work can begin until this phase is complete
+**STATUS**: ✅ ALL FOUNDATIONAL TASKS COMPLETE - User stories can proceed
 
 ### Database Models
 
-- [ ] T006 Create Conversation model in backend/src/models/conversation.py per data-model.md
-- [ ] T007 [P] Create Message model in backend/src/models/message.py per data-model.md
-- [ ] T008 Create Alembic migration for conversations and messages tables in backend/alembic/versions/
+- [x] T006 Create Conversation model in backend/src/models/conversation.py per data-model.md
+- [x] T007 [P] Create Message model in backend/src/models/message.py per data-model.md
+- [x] T008 Create Alembic migration for conversations and messages tables in backend/alembic/versions/
 
 ### AI Core Components
 
-- [ ] T009 Create intent extraction prompts in backend/src/ai/prompts/intent.py with function calling schema
-- [ ] T010 [P] Create response generation prompts in backend/src/ai/prompts/response.py
-- [ ] T011 Implement AI interpreter in backend/src/ai/interpreter.py with OpenAI function calling
-- [ ] T012 Implement Bonsai CLI executor bridge in backend/src/ai/executor.py calling existing task_service
-- [ ] T013 Implement confidence-based fallback logic in backend/src/ai/fallback.py (tiers: >0.8, 0.5-0.8, <0.5)
+- [x] T009 Create intent extraction prompts in backend/src/ai/prompts/intent.py with function calling schema
+- [x] T010 [P] Create response generation prompts in backend/src/ai/prompts/response.py
+- [x] T011 Implement AI interpreter in backend/src/ai/interpreter.py with OpenAI function calling
+- [x] T012 Implement Bonsai CLI executor bridge in backend/src/ai/executor.py calling existing task_service
+- [x] T013 Implement confidence-based fallback logic in backend/src/ai/fallback.py (tiers: >0.8, 0.5-0.8, <0.5)
 
 ### Chat Service Layer
 
-- [ ] T014 Create ChatService in backend/src/services/chat_service.py orchestrating interpreter → executor → response
-- [ ] T015 [P] Create ConversationService in backend/src/services/conversation_service.py for CRUD operations
+- [x] T014 Create ChatService in backend/src/services/chat_service.py orchestrating interpreter → executor → response
+- [x] T015 [P] Create ConversationService in backend/src/services/conversation_service.py for CRUD operations
 
 ### API Endpoints (Foundation)
 
-- [ ] T016 Create chat API router in backend/src/api/chat.py with POST /chat/message endpoint
-- [ ] T017 [P] Create conversations API router in backend/src/api/conversations.py with CRUD endpoints
-- [ ] T018 Register chat and conversations routers in backend/src/main.py
+- [x] T016 Create chat API router in backend/src/api/chat.py with POST /chat/message endpoint
+- [x] T017 [P] Create conversations API router in backend/src/api/conversations.py with CRUD endpoints
+- [x] T018 Register chat and conversations routers in backend/src/main.py
 
 ### Frontend Foundation
 
-- [ ] T019 Create chat API client in frontend/src/services/chat-api.ts with sendMessage and conversation methods
-- [ ] T020 [P] Create ChatWindow component shell in frontend/src/components/chat/ChatWindow.tsx
-- [ ] T021 [P] Create MessageBubble component in frontend/src/components/chat/MessageBubble.tsx
-- [ ] T022 [P] Create InputBar component in frontend/src/components/chat/InputBar.tsx
-- [ ] T023 Create chat page in frontend/src/app/chat/page.tsx integrating ChatWindow
+- [x] T019 Create chat API client in frontend/src/lib/api.ts with sendMessage and conversation methods
+- [x] T020 [P] Create ChatWindow component shell in frontend/src/components/chat/ChatWindow.tsx
+- [x] T021 [P] Create MessageBubble component in frontend/src/components/chat/MessageBubble.tsx
+- [x] T022 [P] Create InputBar component in frontend/src/components/chat/InputBar.tsx
+- [x] T023 Create chat page in frontend/src/app/chat/page.tsx integrating ChatWindow
 
-**Checkpoint**: Foundation ready - user story implementation can now begin
+**Checkpoint**: ✅ Foundation ready - user story implementation can now begin
 
 ---
 
-## Phase 3: User Story 1 - Natural Language Task Creation (Priority: P1)
+## Phase 3: User Story 1 - Natural Language Task Creation (Priority: P1) ✅ COMPLETE
 
 **Goal**: Users can create tasks via natural language like "Add a task to buy groceries tomorrow"
 
@@ -85,27 +87,29 @@
 
 > **NOTE: Write these tests FIRST, ensure they FAIL before implementation**
 
-- [ ] T024 [P] [US1] Contract test for POST /chat/message create action in backend/tests/contract/test_chat_create.py
-- [ ] T025 [P] [US1] Unit test for add intent extraction in backend/tests/unit/test_interpreter_add.py
-- [ ] T026 [P] [US1] Integration test for create task via chat in backend/tests/integration/test_chat_create_flow.py
+- [x] T024 [P] [US1] Contract test for POST /chat/message create action in backend/tests/contract/test_chat_create.py
+- [x] T025 [P] [US1] Unit test for add intent extraction in backend/tests/unit/test_interpreter_add.py
+- [x] T026 [P] [US1] Integration test for create task via chat in backend/tests/integration/test_chat_create_flow.py
 
 ### Implementation for User Story 1
 
-- [ ] T027 [US1] Implement "add" action intent extraction in backend/src/ai/interpreter.py
-- [ ] T028 [US1] Implement "add" action execution in backend/src/ai/executor.py calling task_service.create_task
-- [ ] T029 [US1] Add task creation response formatting in backend/src/ai/prompts/response.py
-- [ ] T030 [US1] Handle ambiguous "add" commands with clarification request in ChatService
-- [ ] T031 [US1] Add frontend display for task creation confirmation in MessageBubble.tsx
+- [x] T027 [US1] Implement "add" action intent extraction in backend/src/ai/interpreter.py
+- [x] T028 [US1] Implement "add" action execution in backend/src/ai/executor.py calling task_service.create_task
+- [x] T029 [US1] Add task creation response formatting in backend/src/ai/prompts/response.py
+- [x] T030 [US1] Handle ambiguous "add" commands with clarification request in ChatService
+- [x] T031 [US1] Add frontend display for task creation confirmation in MessageBubble.tsx
 
-**Checkpoint**: User Story 1 complete - users can create tasks via natural language
+**Checkpoint**: ✅ User Story 1 complete - users can create tasks via natural language
 
 ---
 
-## Phase 4: User Story 2 - Natural Language Task Listing (Priority: P2)
+## Phase 4: User Story 2 - Natural Language Task Listing (Priority: P2) 🔶 TESTS NEEDED
 
 **Goal**: Users can view tasks by asking "What are my pending tasks?" or "What's due today?"
 
 **Independent Test**: Send NL query, verify correct tasks returned matching criteria
+
+**STATUS**: Implementation complete in interpreter.py/executor.py. Tests required before pushing.
 
 ### Tests for User Story 2
 
@@ -115,9 +119,9 @@
 
 ### Implementation for User Story 2
 
-- [ ] T035 [US2] Implement "list" action intent extraction with status_filter in backend/src/ai/interpreter.py
-- [ ] T036 [US2] Implement "list" action execution in backend/src/ai/executor.py calling task_service.list_tasks
-- [ ] T037 [US2] Add task list response formatting in backend/src/ai/prompts/response.py
+- [x] T035 [US2] Implement "list" action intent extraction with status_filter in backend/src/ai/interpreter.py
+- [x] T036 [US2] Implement "list" action execution in backend/src/ai/executor.py calling task_service.list_tasks
+- [x] T037 [US2] Add task list response formatting in backend/src/ai/prompts/response.py
 - [ ] T038 [US2] Handle "no tasks" friendly message in ChatService
 - [ ] T039 [US2] Add frontend display for task list in MessageBubble.tsx with TaskSummary rendering
 
@@ -125,11 +129,13 @@
 
 ---
 
-## Phase 5: User Story 3 - Natural Language Task Completion (Priority: P3)
+## Phase 5: User Story 3 - Natural Language Task Completion (Priority: P3) 🔶 TESTS NEEDED
 
 **Goal**: Users can mark tasks complete via "Mark task 3 as done" or "I finished buying groceries"
 
 **Independent Test**: Create task, complete via NL, verify status changes to completed
+
+**STATUS**: Implementation complete in interpreter.py/executor.py. Tests required before pushing.
 
 ### Tests for User Story 3
 
@@ -139,21 +145,23 @@
 
 ### Implementation for User Story 3
 
-- [ ] T043 [US3] Implement "complete" action intent extraction (by ID and by title match) in backend/src/ai/interpreter.py
-- [ ] T044 [US3] Implement "complete" action execution in backend/src/ai/executor.py calling task_service.complete_task
-- [ ] T045 [US3] Add task completion response formatting in backend/src/ai/prompts/response.py
-- [ ] T046 [US3] Handle non-existent task error in ChatService with helpful message
-- [ ] T047 [US3] Handle multiple task matches by prompting user to specify ID
+- [x] T043 [US3] Implement "complete" action intent extraction (by ID and by title match) in backend/src/ai/interpreter.py
+- [x] T044 [US3] Implement "complete" action execution in backend/src/ai/executor.py calling task_service.complete_task
+- [x] T045 [US3] Add task completion response formatting in backend/src/ai/prompts/response.py
+- [x] T046 [US3] Handle non-existent task error in ChatService with helpful message
+- [x] T047 [US3] Handle multiple task matches by prompting user to specify ID
 
 **Checkpoint**: User Stories 1-3 complete - core create/view/complete workflow functional
 
 ---
 
-## Phase 6: User Story 4 - Natural Language Task Updates (Priority: P4)
+## Phase 6: User Story 4 - Natural Language Task Updates (Priority: P4) 🔶 TESTS NEEDED
 
 **Goal**: Users can update tasks via "Change task 1 title to 'Call mom tonight'"
 
 **Independent Test**: Create task, update via NL, verify changes persist
+
+**STATUS**: Implementation complete in interpreter.py/executor.py. Tests required before pushing.
 
 ### Tests for User Story 4
 
@@ -163,20 +171,22 @@
 
 ### Implementation for User Story 4
 
-- [ ] T051 [US4] Implement "update" action intent extraction (title, due_date) in backend/src/ai/interpreter.py
-- [ ] T052 [US4] Implement "update" action execution in backend/src/ai/executor.py calling task_service.update_task
-- [ ] T053 [US4] Add task update response formatting in backend/src/ai/prompts/response.py
-- [ ] T054 [US4] Handle incomplete update (missing field) with clarification prompt
+- [x] T051 [US4] Implement "update" action intent extraction (title, due_date) in backend/src/ai/interpreter.py
+- [x] T052 [US4] Implement "update" action execution in backend/src/ai/executor.py calling task_service.update_task
+- [x] T053 [US4] Add task update response formatting in backend/src/ai/prompts/response.py
+- [x] T054 [US4] Handle incomplete update (missing field) with clarification prompt
 
 **Checkpoint**: User Stories 1-4 complete - full CRUD minus delete
 
 ---
 
-## Phase 7: User Story 5 - Natural Language Task Deletion (Priority: P5)
+## Phase 7: User Story 5 - Natural Language Task Deletion (Priority: P5) 🔶 TESTS NEEDED
 
 **Goal**: Users can delete tasks via "Delete task 2" or "Remove the grocery task"
 
 **Independent Test**: Create task, delete via NL, verify no longer in list
+
+**STATUS**: Implementation complete in interpreter.py/executor.py. Tests required before pushing.
 
 ### Tests for User Story 5
 
@@ -186,33 +196,35 @@
 
 ### Implementation for User Story 5
 
-- [ ] T058 [US5] Implement "delete" action intent extraction in backend/src/ai/interpreter.py
-- [ ] T059 [US5] Implement "delete" action execution in backend/src/ai/executor.py calling task_service.delete_task
+- [x] T058 [US5] Implement "delete" action intent extraction in backend/src/ai/interpreter.py
+- [x] T059 [US5] Implement "delete" action execution in backend/src/ai/executor.py calling task_service.delete_task
 - [ ] T060 [US5] Add deletion confirmation prompt before executing destructive action
-- [ ] T061 [US5] Add task deletion response formatting in backend/src/ai/prompts/response.py
+- [x] T061 [US5] Add task deletion response formatting in backend/src/ai/prompts/response.py
 
 **Checkpoint**: User Stories 1-5 complete - full CRUD via natural language
 
 ---
 
-## Phase 8: User Story 6 - Graceful Fallback to CLI (Priority: P6)
+## Phase 8: User Story 6 - Graceful Fallback to CLI (Priority: P6) 🔶 PARTIAL
 
 **Goal**: When AI fails or confidence is low, provide CLI command alternatives
 
 **Independent Test**: Simulate AI failure, verify CLI instructions returned
 
+**STATUS**: Core fallback logic implemented. Some tests exist. Integration tests needed.
+
 ### Tests for User Story 6
 
 - [ ] T062 [P] [US6] Contract test for 503 fallback response in backend/tests/contract/test_chat_fallback.py
-- [ ] T063 [P] [US6] Unit test for confidence-based fallback in backend/tests/unit/test_fallback.py
+- [x] T063 [P] [US6] Unit test for confidence-based fallback in backend/tests/unit/test_fallback.py
 - [ ] T064 [P] [US6] Integration test for AI timeout fallback in backend/tests/integration/test_chat_timeout.py
 
 ### Implementation for User Story 6
 
-- [ ] T065 [US6] Implement 5-second AI timeout with asyncio.wait_for in backend/src/ai/interpreter.py
-- [ ] T066 [US6] Implement low-confidence fallback with CLI suggestion in ChatService
-- [ ] T067 [US6] Implement AI unavailable handler returning FallbackResponse
-- [ ] T068 [US6] Create FallbackCLI component in frontend/src/components/chat/FallbackCLI.tsx
+- [x] T065 [US6] Implement 5-second AI timeout with asyncio.wait_for in backend/src/ai/interpreter.py
+- [x] T066 [US6] Implement low-confidence fallback with CLI suggestion in ChatService
+- [x] T067 [US6] Implement AI unavailable handler returning FallbackResponse
+- [x] T068 [US6] Create FallbackCLI component in frontend/src/components/chat/FallbackCLI.tsx
 - [ ] T069 [US6] Add "/cli" command detection to bypass AI in ChatService
 - [ ] T070 [US6] Add fallback UI rendering in ChatWindow when FallbackResponse received
 
@@ -350,3 +362,97 @@ Tests: T024, T025, T026 (all parallel within story)
 - Each user story is independently completable and testable
 - Commit after each task or logical group
 - Stop at any checkpoint to validate story independently
+
+---
+
+## When to Stop and Push
+
+### Push Policy (Constitution Principle III - Test-First)
+
+**RULE**: Never push code without passing tests for that feature increment.
+
+### Current State Summary
+
+| Phase | Status | Tests | Implementation | Ready to Push? |
+|-------|--------|-------|----------------|----------------|
+| Phase 1: Setup | ✅ COMPLETE | N/A | ✅ Done | ✅ YES (already pushed) |
+| Phase 2: Foundational | ✅ COMPLETE | N/A | ✅ Done | ✅ YES (already pushed) |
+| US1: Create | ✅ COMPLETE | ✅ Done | ✅ Done | ✅ YES (already pushed) |
+| US2: List | 🔶 PARTIAL | ❌ Missing | ✅ Done | ❌ NO - Write tests first |
+| US3: Complete | 🔶 PARTIAL | ❌ Missing | ✅ Done | ❌ NO - Write tests first |
+| US4: Update | 🔶 PARTIAL | ❌ Missing | ✅ Done | ❌ NO - Write tests first |
+| US5: Delete | 🔶 PARTIAL | ❌ Missing | ✅ Done | ❌ NO - Write tests first |
+| US6: Fallback | 🔶 PARTIAL | 🔶 Partial | ✅ Done | ❌ NO - Complete tests first |
+| Phase 9: Polish | ❌ TODO | ❌ Missing | ❌ TODO | ❌ NO |
+
+### Valid Stop Points (Checkpoints)
+
+Each checkpoint is independently deployable and testable:
+
+1. **✅ MVP (Current)**: Phase 1 + Phase 2 + US1
+   - Status: PUSHED
+   - Demo: "Add a task to buy groceries tomorrow"
+
+2. **⏳ v0.2**: MVP + US2 (List)
+   - Requires: T032-T034 tests passing
+   - Demo: "What are my pending tasks?"
+
+3. **⏳ v0.3**: v0.2 + US3 (Complete)
+   - Requires: T040-T042 tests passing
+   - Demo: "Mark task 1 as done"
+
+4. **⏳ v0.4**: v0.3 + US4 (Update)
+   - Requires: T048-T050 tests passing
+   - Demo: "Update task 1 title to 'Call mom tonight'"
+
+5. **⏳ v0.5**: v0.4 + US5 (Delete)
+   - Requires: T055-T057 tests passing
+   - Demo: "Delete task 2"
+
+6. **⏳ v1.0**: v0.5 + US6 (Fallback) + Polish
+   - Requires: All tests passing
+   - Demo: Full feature with graceful degradation
+
+### Immediate Next Steps
+
+To reach the next valid push point (v0.2), complete these tasks in order:
+
+1. **Write US2 Tests** (T032-T034):
+   ```
+   backend/tests/contract/test_chat_list.py
+   backend/tests/unit/test_interpreter_list.py
+   backend/tests/integration/test_chat_list_flow.py
+   ```
+
+2. **Run tests** - ensure they pass with existing implementation
+
+3. **Fix any failing tests** - adjust implementation if needed
+
+4. **Commit and push** with message: `feat(chat): Add natural language task listing (US2)`
+
+### Test Commands
+
+```bash
+# Run all Phase 3 tests
+cd backend && pytest tests/ -k "chat or interpreter or fallback" -v
+
+# Run specific user story tests
+pytest tests/ -k "test_chat_list" -v      # US2
+pytest tests/ -k "test_chat_complete" -v  # US3
+pytest tests/ -k "test_chat_update" -v    # US4
+pytest tests/ -k "test_chat_delete" -v    # US5
+pytest tests/ -k "test_fallback" -v       # US6
+```
+
+### Continuous Implementation Flow
+
+```
+For each User Story (US2-US6):
+  1. Write tests (Red) → Tests should FAIL
+  2. Verify implementation makes tests pass (Green)
+  3. Refactor if needed
+  4. Run full test suite
+  5. Commit with: feat(chat): <user story description>
+  6. Push to remote
+  7. Move to next User Story
+```

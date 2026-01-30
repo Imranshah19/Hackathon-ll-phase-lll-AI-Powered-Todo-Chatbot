@@ -103,19 +103,19 @@
 
 ---
 
-## Phase 4: User Story 2 - Natural Language Task Listing (Priority: P2) 🔶 TESTS NEEDED
+## Phase 4: User Story 2 - Natural Language Task Listing (Priority: P2) ✅ COMPLETE
 
 **Goal**: Users can view tasks by asking "What are my pending tasks?" or "What's due today?"
 
 **Independent Test**: Send NL query, verify correct tasks returned matching criteria
 
-**STATUS**: Implementation complete in interpreter.py/executor.py. Tests required before pushing.
+**STATUS**: ✅ Tests and implementation complete. Ready to push.
 
 ### Tests for User Story 2
 
-- [ ] T032 [P] [US2] Contract test for POST /chat/message list action in backend/tests/contract/test_chat_list.py
-- [ ] T033 [P] [US2] Unit test for list intent extraction in backend/tests/unit/test_interpreter_list.py
-- [ ] T034 [P] [US2] Integration test for list tasks via chat in backend/tests/integration/test_chat_list_flow.py
+- [x] T032 [P] [US2] Contract test for POST /chat/message list action in backend/tests/contract/test_chat_list.py
+- [x] T033 [P] [US2] Unit test for list intent extraction in backend/tests/unit/test_interpreter_list.py
+- [x] T034 [P] [US2] Integration test for list tasks via chat in backend/tests/integration/test_chat_list_flow.py
 
 ### Implementation for User Story 2
 
@@ -378,7 +378,7 @@ Tests: T024, T025, T026 (all parallel within story)
 | Phase 1: Setup | ✅ COMPLETE | N/A | ✅ Done | ✅ YES (already pushed) |
 | Phase 2: Foundational | ✅ COMPLETE | N/A | ✅ Done | ✅ YES (already pushed) |
 | US1: Create | ✅ COMPLETE | ✅ Done | ✅ Done | ✅ YES (already pushed) |
-| US2: List | 🔶 PARTIAL | ❌ Missing | ✅ Done | ❌ NO - Write tests first |
+| US2: List | ✅ COMPLETE | ✅ Done | ✅ Done | ✅ YES - Ready to push |
 | US3: Complete | 🔶 PARTIAL | ❌ Missing | ✅ Done | ❌ NO - Write tests first |
 | US4: Update | 🔶 PARTIAL | ❌ Missing | ✅ Done | ❌ NO - Write tests first |
 | US5: Delete | 🔶 PARTIAL | ❌ Missing | ✅ Done | ❌ NO - Write tests first |

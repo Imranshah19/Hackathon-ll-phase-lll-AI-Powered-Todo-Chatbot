@@ -155,19 +155,19 @@
 
 ---
 
-## Phase 6: User Story 4 - Natural Language Task Updates (Priority: P4) 🔶 TESTS NEEDED
+## Phase 6: User Story 4 - Natural Language Task Updates (Priority: P4) ✅ COMPLETE
 
 **Goal**: Users can update tasks via "Change task 1 title to 'Call mom tonight'"
 
 **Independent Test**: Create task, update via NL, verify changes persist
 
-**STATUS**: Implementation complete in interpreter.py/executor.py. Tests required before pushing.
+**STATUS**: ✅ Tests and implementation complete. Ready to push.
 
 ### Tests for User Story 4
 
-- [ ] T048 [P] [US4] Contract test for POST /chat/message update action in backend/tests/contract/test_chat_update.py
-- [ ] T049 [P] [US4] Unit test for update intent extraction in backend/tests/unit/test_interpreter_update.py
-- [ ] T050 [P] [US4] Integration test for update task via chat in backend/tests/integration/test_chat_update_flow.py
+- [x] T048 [P] [US4] Contract test for POST /chat/message update action in backend/tests/contract/test_chat_update.py
+- [x] T049 [P] [US4] Unit test for update intent extraction in backend/tests/unit/test_interpreter_update.py
+- [x] T050 [P] [US4] Integration test for update task via chat in backend/tests/integration/test_chat_update_flow.py
 
 ### Implementation for User Story 4
 
@@ -180,19 +180,19 @@
 
 ---
 
-## Phase 7: User Story 5 - Natural Language Task Deletion (Priority: P5) 🔶 TESTS NEEDED
+## Phase 7: User Story 5 - Natural Language Task Deletion (Priority: P5) ✅ COMPLETE
 
 **Goal**: Users can delete tasks via "Delete task 2" or "Remove the grocery task"
 
 **Independent Test**: Create task, delete via NL, verify no longer in list
 
-**STATUS**: Implementation complete in interpreter.py/executor.py. Tests required before pushing.
+**STATUS**: ✅ Tests and implementation complete. Ready to push.
 
 ### Tests for User Story 5
 
-- [ ] T055 [P] [US5] Contract test for POST /chat/message delete action in backend/tests/contract/test_chat_delete.py
-- [ ] T056 [P] [US5] Unit test for delete intent extraction in backend/tests/unit/test_interpreter_delete.py
-- [ ] T057 [P] [US5] Integration test for delete task via chat in backend/tests/integration/test_chat_delete_flow.py
+- [x] T055 [P] [US5] Contract test for POST /chat/message delete action in backend/tests/contract/test_chat_delete.py
+- [x] T056 [P] [US5] Unit test for delete intent extraction in backend/tests/unit/test_interpreter_delete.py
+- [x] T057 [P] [US5] Integration test for delete task via chat in backend/tests/integration/test_chat_delete_flow.py
 
 ### Implementation for User Story 5
 
@@ -379,9 +379,9 @@ Tests: T024, T025, T026 (all parallel within story)
 | Phase 2: Foundational | ✅ COMPLETE | N/A | ✅ Done | ✅ YES (already pushed) |
 | US1: Create | ✅ COMPLETE | ✅ Done | ✅ Done | ✅ YES (already pushed) |
 | US2: List | ✅ COMPLETE | ✅ Done | ✅ Done | ✅ YES (pushed) |
-| US3: Complete | ✅ COMPLETE | ✅ Done | ✅ Done | ✅ YES - Ready to push |
-| US4: Update | 🔶 PARTIAL | ❌ Missing | ✅ Done | ❌ NO - Write tests first |
-| US5: Delete | 🔶 PARTIAL | ❌ Missing | ✅ Done | ❌ NO - Write tests first |
+| US3: Complete | ✅ COMPLETE | ✅ Done | ✅ Done | ✅ YES (pushed) |
+| US4: Update | ✅ COMPLETE | ✅ Done | ✅ Done | ✅ YES - Ready to push |
+| US5: Delete | ✅ COMPLETE | ✅ Done | ✅ Done | ✅ YES - Ready to push |
 | US6: Fallback | 🔶 PARTIAL | 🔶 Partial | ✅ Done | ❌ NO - Complete tests first |
 | Phase 9: Polish | ❌ TODO | ❌ Missing | ❌ TODO | ❌ NO |
 

@@ -86,46 +86,76 @@ class TestChatMessageCreateContract:
 
             assert response.status_code != 422
 
-    def test_request_schema_rejects_empty_message(self, client, auth_headers):
+    def test_request_schema_rejects_empty_message(self, client, auth_headers, mock_user_id):
         """Test that empty message is rejected."""
-        request_body = {
-            "message": "",
-        }
+        from src.auth.dependencies import get_current_user_id
+        from src.main import app
 
-        response = client.post(
-            "/api/chat/message",
-            json=request_body,
-            headers=auth_headers,
-        )
+        async def override_get_current_user_id():
+            return mock_user_id
 
-        # Should be 422 validation error
-        assert response.status_code == 422
+        app.dependency_overrides[get_current_user_id] = override_get_current_user_id
+        try:
+            request_body = {
+                "message": "",
+            }
 
-    def test_request_schema_rejects_missing_message(self, client, auth_headers):
+            response = client.post(
+                "/api/chat/message",
+                json=request_body,
+                headers=auth_headers,
+            )
+
+            # Should be 422 validation error
+            assert response.status_code == 422
+        finally:
+            app.dependency_overrides.clear()
+
+    def test_request_schema_rejects_missing_message(self, client, auth_headers, mock_user_id):
         """Test that missing message field is rejected."""
-        request_body = {}
+        from src.auth.dependencies import get_current_user_id
+        from src.main import app
 
-        response = client.post(
-            "/api/chat/message",
-            json=request_body,
-            headers=auth_headers,
-        )
+        async def override_get_current_user_id():
+            return mock_user_id
 
-        assert response.status_code == 422
+        app.dependency_overrides[get_current_user_id] = override_get_current_user_id
+        try:
+            request_body = {}
 
-    def test_request_schema_rejects_long_message(self, client, auth_headers):
+            response = client.post(
+                "/api/chat/message",
+                json=request_body,
+                headers=auth_headers,
+            )
+
+            assert response.status_code == 422
+        finally:
+            app.dependency_overrides.clear()
+
+    def test_request_schema_rejects_long_message(self, client, auth_headers, mock_user_id):
         """Test that message over 2000 chars is rejected."""
-        request_body = {
-            "message": "x" * 2001,
-        }
+        from src.auth.dependencies import get_current_user_id
+        from src.main import app
 
-        response = client.post(
-            "/api/chat/message",
-            json=request_body,
-            headers=auth_headers,
-        )
+        async def override_get_current_user_id():
+            return mock_user_id
 
-        assert response.status_code == 422
+        app.dependency_overrides[get_current_user_id] = override_get_current_user_id
+        try:
+            request_body = {
+                "message": "x" * 2001,
+            }
+
+            response = client.post(
+                "/api/chat/message",
+                json=request_body,
+                headers=auth_headers,
+            )
+
+            assert response.status_code == 422
+        finally:
+            app.dependency_overrides.clear()
 
     def test_response_schema_contains_required_fields(self, client, auth_headers, mock_user_id):
         """Test response contains all required fields for create action."""

@@ -23,6 +23,7 @@ from fastapi.responses import JSONResponse
 from pydantic import ValidationError
 
 from src.db import create_db_and_tables
+from src.middleware.logging import ChatLoggingMiddleware, setup_chat_logging
 
 # =============================================================================
 # Application Lifespan
@@ -79,6 +80,12 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # Chat request/response logging middleware
+    app.add_middleware(ChatLoggingMiddleware)
+
+    # Setup chat logging
+    setup_chat_logging(log_level=os.getenv("LOG_LEVEL", "INFO"))
 
     # -------------------------------------------------------------------------
     # Error Handlers

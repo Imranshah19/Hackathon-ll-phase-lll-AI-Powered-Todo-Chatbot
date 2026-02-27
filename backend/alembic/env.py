@@ -14,6 +14,8 @@ from sqlmodel import SQLModel
 # Import all models to register them with SQLModel.metadata
 from src.models.task import Task
 from src.models.user import User
+from src.models.conversation import Conversation
+from src.models.message import Message
 
 # Alembic Config object
 config = context.config

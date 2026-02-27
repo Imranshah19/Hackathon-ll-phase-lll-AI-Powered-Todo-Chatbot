@@ -69,7 +69,7 @@ class AIConfig(BaseSettings):
     )
 
     anthropic_model: str = Field(
-        default="claude-3-haiku-20240307",
+        default="claude-3-5-haiku-20241022",
         description="Anthropic model to use as fallback",
     )
 
@@ -91,9 +91,9 @@ class AIConfig(BaseSettings):
     @property
     def primary_provider(self) -> Literal["openai", "anthropic", "none"]:
         """Determine which AI provider is available."""
-        if self.openai_api_key:
+        if self.openai_api_key and self.openai_api_key.strip():
             return "openai"
-        elif self.anthropic_api_key:
+        elif self.anthropic_api_key and self.anthropic_api_key.strip():
             return "anthropic"
         return "none"
 

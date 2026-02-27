@@ -190,6 +190,11 @@ class ChatService:
         Returns:
             Tuple of (ChatResponse, Message)
         """
+        # Verify conversation exists and belongs to this user
+        conversation = self.conversation_service.get_conversation(conversation_id)
+        if not conversation:
+            raise ValueError("Conversation not found")
+
         if not confirmed:
             response = ChatResponse(
                 message="Okay, I won't do that. What would you like to do instead?",

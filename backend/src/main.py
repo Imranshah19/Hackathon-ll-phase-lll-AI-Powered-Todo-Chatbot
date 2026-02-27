@@ -14,7 +14,6 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 from contextlib import asynccontextmanager
-from typing import Any
 
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError

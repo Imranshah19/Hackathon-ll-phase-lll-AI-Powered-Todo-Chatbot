@@ -8,6 +8,7 @@ Endpoints:
 All endpoints require authentication.
 """
 
+import logging
 from typing import Any
 from uuid import UUID
 
@@ -19,6 +20,7 @@ from src.models.message import MessagePublic
 from src.services.chat_service import ChatService
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 # =============================================================================
@@ -119,8 +121,7 @@ async def send_message(
         )
     except Exception as e:
         # Log the error but return a user-friendly message
-        import logging
-        logging.error(f"Chat error: {e}", exc_info=True)
+        logger.error(f"Chat error for user {user_id}: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="An error occurred processing your message. Please try again.",

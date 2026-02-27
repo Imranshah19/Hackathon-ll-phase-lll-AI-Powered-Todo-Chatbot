@@ -16,6 +16,7 @@ import logging
 from typing import Any
 from uuid import UUID
 
+from sqlalchemy import func
 from sqlmodel import Session, select
 
 from src.models.base import utc_now
@@ -121,9 +122,10 @@ class ConversationService:
         Returns:
             Tuple of (conversations list, total count)
         """
-        # Get total count
-        count_query = select(Conversation).where(Conversation.user_id == self.user_id)
-        total = len(self.session.exec(count_query).all())
+        # Get total count efficiently using SQL COUNT
+        total = self.session.exec(
+            select(func.count(Conversation.id)).where(Conversation.user_id == self.user_id)
+        ).one()
 
         # Get paginated results
         query = (

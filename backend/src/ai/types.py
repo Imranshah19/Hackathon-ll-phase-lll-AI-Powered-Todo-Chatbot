@@ -107,9 +107,11 @@ class InterpretedCommand:
         Returns:
             ConfidenceLevel based on configured thresholds.
         """
-        if self.confidence >= 0.8:
+        from src.config.ai_config import get_ai_config
+        config = get_ai_config()
+        if self.confidence >= config.confidence_threshold_high:
             return ConfidenceLevel.HIGH
-        elif self.confidence >= 0.5:
+        elif self.confidence >= config.confidence_threshold_low:
             return ConfidenceLevel.MEDIUM
         return ConfidenceLevel.LOW
 
